@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+//import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 @Slf4j
 @RestController

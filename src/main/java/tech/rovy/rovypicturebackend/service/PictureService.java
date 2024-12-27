@@ -2,6 +2,7 @@ package tech.rovy.rovypicturebackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 import tech.rovy.rovypicturebackend.model.dto.picture.PictureQueryRequest;
 import tech.rovy.rovypicturebackend.model.dto.picture.PictureReviewRequest;
@@ -40,6 +41,9 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser
      */
     void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
+
+    @Async
+    void clearPictureFile(Picture oldPicture);
 
     /**
      * 验证图片

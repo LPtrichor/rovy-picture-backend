@@ -12,9 +12,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import tech.rovy.rovypicturebackend.exception.BusinessException;
 import tech.rovy.rovypicturebackend.exception.ErrorCode;
 import tech.rovy.rovypicturebackend.exception.ThrowUtils;
+import tech.rovy.rovypicturebackend.manager.CosManager;
 import tech.rovy.rovypicturebackend.manager.upload.FilePictureUpload;
 import tech.rovy.rovypicturebackend.manager.upload.PictureUploadTemplate;
 import tech.rovy.rovypicturebackend.manager.upload.UrlPictureUpload;
@@ -61,6 +63,30 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private CosManager cosManager;
+
+    @Async
+    @Override
+    public void clearPictureFile(Picture oldPicture) {
+        // 判断该图片是否被多条记录使用
+        String pictureUrl = oldPicture.getUrl();
+        long count = this.lambdaQuery()
+                .eq(Picture::getUrl, pictureUrl)
+                .count();
+        // 有不止一条记录用到了该图片，不清理
+        if (count > 1) {
+            return;
+        }
+        cosManager.deleteObject(oldPicture.getUrl());
+        // 清理缩略图
+        String thumbnailUrl = oldPicture.getThumbnailUrl();
+        if (StrUtil.isNotBlank(thumbnailUrl)) {
+            cosManager.deleteObject(thumbnailUrl);
+        }
+    }
+
 
     @Override
     public void validPicture(Picture picture) {
@@ -159,7 +185,6 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         boolean result = this.updateById(updatePicture);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
     }
-
 
     /**
      * 分页获取图片封装
@@ -295,6 +320,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 构造要入库的图片信息
         Picture picture = new Picture();
         picture.setUrl(uploadPictureResult.getUrl());
+        picture.setThumbnailUrl(uploadPictureResult.getThumbnailUrl());
         String picName = uploadPictureResult.getPicName();
         if (pictureUploadRequest != null && StrUtil.isNotBlank(pictureUploadRequest.getPicName())) {
             picName = pictureUploadRequest.getPicName();
