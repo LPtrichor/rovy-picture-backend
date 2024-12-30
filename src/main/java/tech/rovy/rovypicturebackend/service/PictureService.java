@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
-import tech.rovy.rovypicturebackend.model.dto.picture.PictureQueryRequest;
-import tech.rovy.rovypicturebackend.model.dto.picture.PictureReviewRequest;
-import tech.rovy.rovypicturebackend.model.dto.picture.PictureUploadByBatchRequest;
-import tech.rovy.rovypicturebackend.model.dto.picture.PictureUploadRequest;
+import tech.rovy.rovypicturebackend.model.dto.picture.*;
 import tech.rovy.rovypicturebackend.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
 import tech.rovy.rovypicturebackend.model.entity.User;
@@ -41,6 +38,12 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser
      */
     void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
+
+    void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
+
+    void deletePicture(long pictureId, User loginUser);
+
+    void checkPictureAuth(User loginUser, Picture picture);
 
     @Async
     void clearPictureFile(Picture oldPicture);

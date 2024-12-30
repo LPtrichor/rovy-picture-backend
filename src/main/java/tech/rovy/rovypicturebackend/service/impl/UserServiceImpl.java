@@ -63,7 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
         queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortOrder.equals("ascend"), sortField);
         return queryWrapper;
-}
+    }
 
 
     @Override
